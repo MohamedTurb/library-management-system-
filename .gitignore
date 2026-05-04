@@ -1,0 +1,27 @@
+# Qt / build artifacts
+build/
+debug/
+release/
+*.o
+*.obj
+*.exe
+*.dll
+*.lib
+*.pdb
+*.user
+*.pro.user*
+moc_*.cpp
+qrc_*.cpp
+*.user.*
+*.log
+.vscode/
+.idea/
+*.swp
+*.swo
+*.ilk
+*.exp
+
+# Generated JSON data (optional)
+#books.json
+#queue.json
+#returns.json
