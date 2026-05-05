@@ -1,18 +1,18 @@
-# مشروع نظام إدارة مكتبة (Qt Widgets)
+# Library Management System Project (Qt Widgets)
 
-تطبيق سطح مكتب بلغة C++ باستخدام Qt Widgets لإدارة مكتبة بسيطة: حفظ الكتب، إدارة طلبات الاستعارة (Queue)، وإدارة الإرجاع (Stack). الواجهة تتصل مباشرة بهياكل البيانات الموجودة ولا تعيد كتابة منطق الأعمال.
+A C++ desktop application built with Qt Widgets for managing a simple library: book storage, borrowing requests (Queue), and returns (Stack). The UI connects directly to the existing data structures and does not reimplement business logic.
 
-**المكونات الأساسية:**
-- `BookList` في [linkedlist.h](linkedlist.h) و[linkedlist.cpp](linkedlist.cpp) — إدارة الكتب (إضافة، حذف، تحديث التوفر، استرجاع جميع الكتب).
-- `Queue` في [queue.h](queue.h) و[queue.cpp](queue.cpp) — إدارة طلبات الاستعارة (enqueue, dequeue, getPendingRequests).
-- `Stack` في [stack.h](stack.h) و[stack.cpp](stack.cpp) — إدارة عناصر الإرجاع (push, pop, getPendingReturns).
-- واجهة المستخدم: [MainWindow.h](MainWindow.h) و[MainWindow.cpp](MainWindow.cpp).
-- نقطة الدخول: [main.cpp](main.cpp).
-- ملفات البناء: [LibraryManagementSystem.pro](LibraryManagementSystem.pro) (qmake) و[CMakeLists.txt](CMakeLists.txt) (CMake).
+**Core Components:**
+- `BookList` in [linkedlist.h](linkedlist.h) and [linkedlist.cpp](linkedlist.cpp) — book management (add, delete, update availability, retrieve all books).
+- `Queue` in [queue.h](queue.h) and [queue.cpp](queue.cpp) — borrowing request management (enqueue, dequeue, getPendingRequests).
+- `Stack` in [stack.h](stack.h) and [stack.cpp](stack.cpp) — return item management (push, pop, getPendingReturns).
+- User interface: [MainWindow.h](MainWindow.h) and [MainWindow.cpp](MainWindow.cpp).
+- Entry point: [main.cpp](main.cpp).
+- Build files: [LibraryManagementSystem.pro](LibraryManagementSystem.pro) (qmake) and [CMakeLists.txt](CMakeLists.txt) (CMake).
 
-**الهدف:**
-- واجهة تمكن المستخدم من إضافة كتب، طلب استعارة، تسجيل إرجاع، ومعالجة الطلبات والمرجعات.
-- الحفاظ على منطق البيانات في الملفات الموجودة (linkedlist/queue/stack) — الواجهة تستدعي فقط واجهات هذه الهياكل.
+**Goal:**
+- Provide an interface that lets the user add books, request borrowing, register returns, and process requests and returns.
+- Keep the data logic in the existing files (linkedlist/queue/stack) — the UI only calls the interfaces of these structures.
 
 ## Architecture Diagram
 
@@ -93,46 +93,46 @@ flowchart LR
 	S <--> J3
 ```
 
-**ملخص المعمارية:**
-- طبقة العرض (`MainWindow`) مسؤولة عن التفاعل مع المستخدم فقط.
-- طبقة التطبيق تنفذ حالات الاستخدام (إضافة، طلب، إرجاع، معالجة، حفظ/تحميل).
-- طبقة البيانات تعتمد على هياكل البيانات الموجودة: `BookList`, `Queue`, `Stack`.
-- طبقة الحفظ مسؤولة عن حفظ واستعادة الحالة من ملفات JSON.
+**Architecture Summary:**
+- The presentation layer (`MainWindow`) is responsible only for user interaction.
+- The application layer implements the use cases (add, request, return, process, save/load).
+- The data layer depends on the existing data structures: `BookList`, `Queue`, and `Stack`.
+- The persistence layer is responsible for saving and restoring state from JSON files.
 
-**الميزات الحالية:**
-- إضافة كتاب جديد عبر الحقول (Book ID, Title, Author).
-- عرض جميع الكتب من `BookList` في جدول.
-- إضافة طلب استعارة في الـ `Queue` وظهوره في جدول "Pending Requests".
-- إضافة إرجاع في الـ `Stack` وظهوره في جدول "Pending Returns".
-- معالجة الطلبات (تفريغ الطابور وتحديث حالة الكتب) ومعالجة المرجعات (تفريغ المكدس وتحديث الحالة).
-- حفظ/استرجاع حالة الكتب والطلبات والمرجعات إلى/من ملفات JSON عند الإغلاق والتشغيل.
+**Current Features:**
+- Add a new book using fields (Book ID, Title, Author).
+- Display all books from `BookList` in a table.
+- Add a borrowing request to the `Queue` and show it in the "Pending Requests" table.
+- Add a return item to the `Stack` and show it in the "Pending Returns" table.
+- Process requests (empty the queue and update book status) and process returns (empty the stack and update status).
+- Save and restore the state of books, requests, and returns to and from JSON files on exit and startup.
 
-**حفظ البيانات (Persistence):**
-- `books.json` — جميع الكتب وحالتها (موجود في جذر المشروع بعد تشغيل/حفظ التطبيق).
-- `queue.json` — قائمة الطلبات المعلقة.
-- `returns.json` — محتوى مكدس المرجعات المعلقة.
+**Data Persistence:**
+- `books.json` — all books and their status (stored in the project root after running/saving the app).
+- `queue.json` — the list of pending requests.
+- `returns.json` — the contents of the pending returns stack.
 
-الملفات السابقة تُخزَّن في جذر المشروع (أي نفس المجلد الذي يحتوي الملفات المصدرية) حتى يسهل العثور عليها ومشاركتها.
+These files are stored in the project root (the same folder that contains the source files) so they are easy to find and share.
 
-**كيفية العمل مع الملفات:**
-- عند تشغيل التطبيق، تُقرأ هذه الملفات (إن وُجدت) وتُستعاد حالة `BookList`, `Queue`, و`Stack`.
-- عند إغلاق التطبيق أو عند عمليات مهمة، تُحفظ الحالة إلى نفس الملفات بصيغة JSON.
+**Working with Files:**
+- When the application starts, these files are read if they exist, and the state of `BookList`, `Queue`, and `Stack` is restored.
+- When the application closes or important operations occur, the state is saved back to the same files in JSON format.
 
-**بناء المشروع (Development):**
+**Building the Project (Development):**
 
-المتطلبات:
-- Qt 6.6.3 (المشروع مهيأ للعمل مع Qt6، MinGW موصى به على ويندوز).
-- MinGW (g++) متوافق مع نسخة Qt المثبتة.
-- أدوات Qt: `qmake`، `moc`، ويفضّل `windeployqt` لنشر الـ DLLs للتشغيل خارج بيئة التطوير.
+Requirements:
+- Qt 6.6.3 (the project is configured for Qt 6; MinGW is recommended on Windows).
+- MinGW (g++) compatible with the installed Qt version.
+- Qt tools: `qmake`, `moc`, and preferably `windeployqt` to deploy DLLs for running outside the development environment.
 
-بناء عبر qmake (مجرّد مثال على ويندوز PowerShell):
+Build with qmake (example on Windows PowerShell):
 
 ```powershell
 & "C:/Users/Dell/Qt/6.6.3/mingw_64/bin/qmake.exe" LibraryManagementSystem.pro
 mingw32-make
 ```
 
-أو باستخدام CMake:
+Or using CMake:
 
 ```powershell
 mkdir build
@@ -141,44 +141,44 @@ cmake .. -G "MinGW Makefiles"
 mingw32-make
 ```
 
-بعد البناء ستُنتج الملفات التنفيذية داخل مجلد `build` أو حسب إعدادات مشاريع Qt Creator.
+After building, the executable files will be generated inside the `build` folder or according to the Qt Creator project settings.
 
-لتشغيل خارج بيئة Qt Creator على ويندوز يجب نشر مكتبات Qt بجانب التنفيذية؛ يمكن استخدام `windeployqt`:
+To run outside Qt Creator on Windows, Qt libraries must be deployed alongside the executable; you can use `windeployqt`:
 
 ```powershell
 & "C:/Users/Dell/Qt/6.6.3/mingw_64/bin/windeployqt.exe" --release --dir .\build .\build\LibraryManagementSystem.exe
 ```
 
-**تشغيل سريع:**
-- يوجد ملف `run.bat` في جذر المشروع لتشغيل النسخة ضمن مجلد `build` بسرعة.
+**Quick Run:**
+- A `run.bat` file is available in the project root to quickly run the build inside the `build` folder.
 
-مثال:
+Example:
 
 ```powershell
 cd "C:\Users\Dell\OneDrive\Desktop\Data Project"
 .\run.bat
 ```
 
-**ملاحظات هامة للمطورين:**
-- لا تقم بإعادة كتابة منطق الأعمال الموجود في `linkedlist.cpp`, `queue.cpp`, و`stack.cpp`. الواجهة (`MainWindow`) يجب أن تستدعي فقط واجهات هذه الهياكل (`addBook()`, `removeBook()`, `getAllBooks()`, `enqueue()`, `dequeue()`, `push()`, `pop()`, `getPendingRequests()`, `getPendingReturns()`, `processRequest()`, `processReturn()`).
-- عند استعادة المكدس من `returns.json` نحافظ على الترتيب الأصلي: يُخزَّن المكدس كصفيف من الأعلى إلى الأسفل، وعند إعادة البناء نضع العناصر بترتيب عكسي لاستعادة نفس ترتيب الـ `pop()` لاحقًا.
-- عند استعادة الطابور من `queue.json` تُعاد عناصر الطابور بالترتيب الصحيح عبر `enqueue()`.
+**Important Notes for Developers:**
+- Do not rewrite the business logic in `linkedlist.cpp`, `queue.cpp`, and `stack.cpp`. The `MainWindow` UI should only call the interfaces of these structures (`addBook()`, `removeBook()`, `getAllBooks()`, `enqueue()`, `dequeue()`, `push()`, `pop()`, `getPendingRequests()`, `getPendingReturns()`, `processRequest()`, `processReturn()`).
+- When restoring the stack from `returns.json`, the original order is preserved: the stack is stored as an array from top to bottom, and when rebuilding it we insert elements in reverse order to preserve the same later `pop()` order.
+- When restoring the queue from `queue.json`, queue items are reinserted in the correct order through `enqueue()`.
 
-**مكان البحث عن الأخطاء وتشغيل التطبيق:**
-- إذا ظهرت أخطاء مرتبطة بـ `moc`، تأكد من تشغيل `moc` على ملف الرأس `MainWindow.h` ومن تجميع `moc_MainWindow.cpp` مع بقية الملفات.
-- إذا ظهرت رسائل عند التشغيل تفيد بفقدان ملفات DLL خاصة بـ Qt، استعمل `windeployqt` لنشر المكتبات المطلوبة.
+**Where to Look for Errors and Run the App:**
+- If you see errors related to `moc`, make sure `moc` is run on the `MainWindow.h` header and that `moc_MainWindow.cpp` is compiled with the rest of the files.
+- If runtime messages indicate missing Qt DLL files, use `windeployqt` to deploy the required libraries.
 
-**اقتراحات مستقبلية:**
-- إضافة ميزة تصدير/استيراد قاعدة البيانات بصيغة واحدة (مثلاً ملف JSON مركزي) بدلاً من ثلاث ملفات منفصلة.
-- إضافة صفحات إدارة مستخدمين وصلاحيات.
-- إضافة اختبار آلي للوحدات للتحقق من استعادة الحالة وسيناريوهات التزامن على الطابور/المكدس.
+**Future Suggestions:**
+- Add a single-file import/export feature for the database state (for example, a central JSON file) instead of three separate files.
+- Add user and permission management pages.
+- Add automated unit tests to verify state restoration and queue/stack synchronization scenarios.
 
-**ملفات مهمة للمراجعة بسرعة:**
-- [MainWindow.cpp](MainWindow.cpp) — واجهة المستخدم وربط العمليات.
-- [linkedlist.cpp](linkedlist.cpp) — منطق الكتب.
-- [queue.cpp](queue.cpp) — منطق الطابور.
-- [stack.cpp](stack.cpp) — منطق المكدس.
-- [run.bat](run.bat) — سكربت تشغيل سريع.
+**Files to Review Quickly:**
+- [MainWindow.cpp](MainWindow.cpp) — user interface and operation wiring.
+- [linkedlist.cpp](linkedlist.cpp) — book logic.
+- [queue.cpp](queue.cpp) — queue logic.
+- [stack.cpp](stack.cpp) — stack logic.
+- [run.bat](run.bat) — quick run script.
 
 ---
 
